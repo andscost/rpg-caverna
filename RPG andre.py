@@ -1,12 +1,17 @@
-from ramdom import randint
+from random import randint
 
 class Personagem:
     def __init__(self):
         self.nome="Jess"
         self.hp=1
         self.hpmax=1
-    def dar_dano(self,inimigo):
-        pass
+    def dano(self,inimigo):
+        dano = min(max(randint(0, self.hp) - randint(0, inimigo.hp), 0),inimigo.hp)
+        inimigo.hp = inimigo.hp - dano
+        if dano == 0:
+            print "%s esquivou do ataque de %s." % (inimigo.nome, self.nome)
+        else: print "%s feriu %s!" % (self.nome, inimigo.nome)
+        return inimigo.hp <= 0
 
 class Monstro(Personagem):
     def __init__(self, jogador):
@@ -15,15 +20,16 @@ class Monstro(Personagem):
         self.hp = randint(1, jogador.hp)
         
 class jogador (Personagem):
-    def __init__(self):
-        Personagem._init(self)
+    def __init__(self,nome):
+        Personagem.__init__(self)
         self.estado="normal"
         self.hp=10
         self.hp_max=10
+        self.nome = nome
     def sair (self):
       print "%s nao pode achar uma saida e morre de fome.\nR.I.P." % self.nome
       self.hp = 0
-    def ajuda (self): print Comandos.Keys()
+    def ajuda (self): print Comandos.keys()
     def status (self):print " saude de %s : %d/%d" % (self.nome, self.hp, self.hp_max)
     def cansado (self):
        print "%s se sente cansado" % self.nome
@@ -65,7 +71,6 @@ class jogador (Personagem):
                 self.inimigo = None
                 self.estado = 'normal'
                 if randint(0, self.hp) < 10:
-                    self.hp = self.hp + 1
                     self.hp_max = self.hp_max + 1
                     print "%s se sente mais forte!" %self.nome
             else: self.ataque_inimigo()
@@ -78,13 +83,25 @@ class jogador (Personagem):
 Comandos = {
     "sair": jogador.sair,
     "ajuda": jogador.ajuda,
-    "estado": jogador.estado,
-    "cansado": jogador.cansado,
+    "status": jogador.status,
     "descansar": jogador.descansar,
     "explorar": jogador.explorar,
-    "atacar": jogador.atacar,
+    "atacar": jogador.ataque,
     }
                     
-p = jogador()
-p.nome = raw_input ("qual sera o nome de seu personagem?")        
-          
+p = jogador(raw_input("qual sera o nome de seu personagem?  "))
+
+print "digite ajuda para uma lista de comandos"
+p.ajuda()
+print "%s entra numa cavena escura procurando por uma aventura" % p.nome 
+
+while p.hp > 0 :
+    controle = raw_input("> ")
+    comandoencontrar = False
+    for comando in Comandos.keys():
+        if comando == controle:
+            Comandos[controle](p)
+            comandoencontrar = True
+    if not comandoencontrar:
+        print "nao foi possivel executar esse comando, favor digitar outra vez"
+    
