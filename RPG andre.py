@@ -16,7 +16,8 @@ class Personagem:
 class Monstro(Personagem):
     def __init__(self, jogador):
         Personagem.__init__(self)
-        self.nome = "Goblin"
+        nomes = ["Goblin","Morcego","Zumbi","Bruxa","Afogador","Vampiro"]
+        self.nome = nomes[randint(0, 5)]
         self.hp = randint(1, jogador.hp)
         
 class jogador (Personagem):
@@ -43,7 +44,7 @@ class jogador (Personagem):
             if randint(0,1):
                 self.inimigo = Monstro(self)
                 print "%s e rudamente acordado por %s!" % (self.nome, self.inimigo.nome)
-                self.estado - 'luta'
+                self.estado = 'luta'
                 self.ataque_inimigo()
             else:
                 if self.hp < self.hp_max:
@@ -77,9 +78,7 @@ class jogador (Personagem):
     def ataque_inimigo(self):
         if self.inimigo.dano(self):
             print "%s foi assassino por %s !!!\nR.I.P" %(self.nome, self.inimigo.nome)
-                        
-            
-           
+
 Comandos = {
     "sair": jogador.sair,
     "ajuda": jogador.ajuda,
@@ -88,20 +87,28 @@ Comandos = {
     "explorar": jogador.explorar,
     "atacar": jogador.ataque,
     }
-                    
-p = jogador(raw_input("qual sera o nome de seu personagem?  "))
-
-print "digite ajuda para uma lista de comandos"
-p.ajuda()
-print "%s entra numa cavena escura procurando por uma aventura" % p.nome 
-
-while p.hp > 0 :
-    controle = raw_input("> ")
-    comandoencontrar = False
-    for comando in Comandos.keys():
-        if comando == controle:
-            Comandos[controle](p)
-            comandoencontrar = True
-    if not comandoencontrar:
-        print "nao foi possivel executar esse comando, favor digitar outra vez"
+restart = True    
     
+while restart :                   
+    p = jogador(raw_input("qual sera o nome de seu personagem?  "))
+    
+    print "digite ajuda para uma lista de comandos"
+    p.ajuda()
+    print "%s entra numa cavena escura procurando por uma aventura" % p.nome 
+
+    while p.hp > 0 :
+        controle = raw_input("> ")
+        comandoencontrar = False
+        for comando in Comandos.keys():
+            if comando == controle:
+                Comandos[controle](p)
+                comandoencontrar = True
+        if not comandoencontrar:
+            print "nao foi possivel executar esse comando, favor digitar outra vez"
+
+    pergunta = raw_input("GAME OVER, se deseja recomesar digite = 1, se nao digite 0 ")
+    if pergunta == '0':
+        restart = False
+    else:
+        p.hp = 10
+        p.hpmax = 10
